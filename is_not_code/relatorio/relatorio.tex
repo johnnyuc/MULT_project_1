@@ -1,0 +1,656 @@
+% Document settings
+%--------------------------------------------------------------------
+\documentclass{article}
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{float} % Required for image settings
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{makeidx} % Required for indexes
+\usepackage{lastpage} % Required for last page
+\usepackage{indentfirst} % Required to indent the first paragraph
+\usepackage[colorlinks=false,linkcolor=blue,urlcolor=black,bookmarksopen=true]{hyperref} % bookmarks
+\usepackage[section]{placeins}
+\usepackage{bookmark} %to have bookmarks
+
+% Page Settings
+%--------------------------------------------------------------------
+\pagestyle{fancy} % Using fancy
+\usepackage[a4paper, total={6in, 8in}]{geometry} % Document sizes
+\usepackage[T1]{fontenc} % Font
+\usepackage{lmodern} % Font
+\renewcommand{\baselinestretch}{1.2} % Line spacing
+\setcounter{page}{-1} % Set starting page
+\makeindex % Index
+
+% Settings for Fancy Headers and Footers
+%-------------------------------------------------------------------
+\fancyhf{} % Clean header/footer settings
+\fancyhead[L]{\leftmark} % Header text
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}} % Remove header section number
+\setlength{\headheight}{12.80502pt} % Header font height
+\fancyfoot[R]{\thepage\ de \pageref{LastPage}} % Footer
+
+% Misc settings
+%-------------------------------------------------------------------
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Tabela}
+\renewcommand*\contentsname{Índice}
+
+% Settings for paragraphs
+%-------------------------------------------------------------------
+\setlength{\parindent}{20pt} % Paragraph indent
+\setlength{\parskip}{5pt} % Space between paragraphs
+
+% Document cover
+%-------------------------------------------------------------------
+\begin{document}
+\sffamily % Define font
+
+% Logo
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{images/logo.jpg}
+\end{figure}
+
+% Title
+\title{Multimedia TP1}
+
+% Authors
+\author{
+\begin{tabular}{ll}
+    João Santos & 2021236820 \\
+    Joel Oliveira & 2021215037 \\
+    Johnny Fernandes & 2021190668 \\
+    Tomás Azougado & 2021237129
+\end{tabular}
+}
+
+% Date
+\date{Março 2024}
+\maketitle
+
+% Footer page number settings
+\thispagestyle{empty} % Remove page number
+\newpage
+
+% Index page
+%-------------------------------------------------------------------
+\tableofcontents
+
+\thispagestyle{empty} % Remove page number
+\newpage
+
+% 1
+%-------------------------------------------------------------------
+\section{Introdução}
+
+Neste primeiro trabalho da disciplina de Multimédia, exploramos o universo da compressão de imagens, uma área crucial na era digital em que vivemos. Com a proliferação de imagens de alta resolução em diversas plataformas digitais e na web, torna-se fundamental a capacidade de comprimi-las de forma eficiente para garantir uma transmissão e armazenamento de dados eficazes.
+
+O principal objetivo deste trabalho é compreender os princípios por trás do codec JPEG, implementando os passos mais significativos da codificação e descodificação do mesmo, e posteriormente analisar os resultados obtidos. 
+
+O JPEG, que significa Joint Photographic Experts Group, foi desenvolvido principalmente para imagens fotorrealistas, que apresentam uma ampla gama de cores e detalhes. Este padrão de compressão de imagem é particularmente eficaz em capturar nuances subtis e transições suaves, características comuns em fotografias e imagens digitais de alta qualidade.
+
+Ao utilizar a compressão perceptual, o JPEG identifica e elimina redundâncias presentes nas altas frequências e na crominância das imagens. Isso significa que áreas onde há pouca variação de cor ou detalhes finos podem ser representadas de forma mais eficiente, resultando em tamanhos de ficheiro menores sem comprometer significativamente a qualidade visual da imagem. A compressão perceptual leva em consideração as características do sistema visual humano, priorizando a preservação de detalhes importantes para a percepção humana enquanto reduz o armazenamento de informações redundantes.
+
+Desta forma, o JPEG tornou-se um dos codecs de compressão de imagem mais amplamente utilizados numa variedade de aplicações, incluindo transmissão de imagens pela internet, armazenamento de fotografias digitais e processamento de imagens em diversas áreas, desde a fotografia profissional até a transmissão de vídeos online. A sua popularidade e eficiência são atribuídas à sua capacidade de equilibrar o tamanho de ficheiro e a qualidade visual, tornando-o uma escolha preferida para uma ampla gama de cenários de uso.
+
+\newpage
+% 2
+%-------------------------------------------------------------------
+\section{Compressão de Imagem com Recurso ao GIMP}
+
+% 2.1
+%-------------------------------------------------------------------
+\subsection{Análise da Implementação de Compressão de Imagem}
+
+Neste capítulo do relatório pretendemos fazer uma análise da compressão de três imagens facultadas para o desenvolvimento do presente trabalho. As três imagens foram assim comprimidas usando a ferramenta GIMP (GNU Image Manipulation Program), que é uma ferramenta opensource e multiplataforma de edição de imagens disponível gratuitamente.
+
+Uma vez no GIMP, foi feita a exportação das três imagens modelo (airport.bmp, geometric.bmp e nature.bmp) utilizando três definições distintas de qualidade: 75\%, 50\% e 25\%. Consoante o valor de compressão utilizado na exportação pretende-se perceber quais as diferenças visuais que ressaltam à observação do utilizador final - e que levam a um forte compromisso entre otimização de tamanho e qualidade.
+
+Como a conversão é feita para JPEG utilizando esta definição do GIMP - e sabendo-se que o formato JPEG utiliza um modelo de compressão destrutiva - as diferenças serão vincadas, entre as imagens exportadas. Segue abaixo uma tabela resumo destas compressões.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        Imagem & Qualidade & Tam. orig.* & Tam. comp.* & Tx. comp. \\
+        \hline
+        airport.bmp & a = 75\% & 2430122 & 158287 & 15:1 \\
+        \hline
+        airport.bmp & a = 50\% & 2430122 & 105143 & 23:1 \\
+        \hline
+        airport.bmp & a = 25\% & 2430122 & 67916 & 36:1 \\
+        \hline
+        geometric.bmp & a = 75\% & 3003122 & 60681 & 49:1 \\
+        \hline
+        geometric.bmp & a = 50\% & 3003122 & 46387 & 65:1 \\
+        \hline
+        geometric.bmp & a = 25\% & 3003122 & 34506 & 87:1 \\
+        \hline
+        nature.bmp & a = 75\% & 5760122 & 411381 & 14:1 \\
+        \hline
+        nature.bmp & a = 50\% & 5760122 & 310963 & 19:1 \\
+        \hline
+        nature.bmp & a = 25\% & 5760122 & 119910 & 48:1 \\
+        \hline
+    \end{tabular}
+    \caption{Taxas de compressão}
+    \label{tab:tabela1}
+\end{table}
+
+\hspace{14mm}\textbf{*Tamanhos em bytes}
+
+A tabela acima, em consonância com o raciocínio anteriormente desenvolvido, mostra-nos que quanto menor o valor da qualidade na definição de exportação do GIMP, menor o tamanho do ficheiro após a sua compressão (a qualidade e a compressão são inversamente proporcionais), resultando em taxas de compressão na ordem das dezenas de vezes.
+
+\textbf{airport.bmp}
+\begin{itemize}
+    \item \textbf{a = 75\%}: O contraste do preto das janelas com o branco do avião mais próximo realça a perda de qualidade em relação à versão original, notando-se a presença de artefactos em torno das mesmas. Contudo, a diferença de qualidade visual face à original não é muito evidente, pelo que o seu tamanho 15 vezes menor poderá ser interessante consoante o cenário de aplicação.
+    \item \textbf{a = 50\%}: A distorção em torno dos candeeiros torna-se ainda mais visível, com mistura de cor e uma forte presença de ruído. O mesmo acontece com as caudas dos aviões.
+    \item \textbf{a = 25\%}: Incapacidade de reconhecimento da placa do terminal B6 com uma completa pixelização dos caracteres. Os detalhes e os contornos tornam-se difusos e com muito ruído, havendo também uma mistura de cores, especialmente em elementos de menor dimensão.
+\end{itemize}
+
+\textbf{geometric.bmp}
+\begin{itemize}
+    \item \textbf{a = 75\%}: Face à imagem original poucas alterações se notam, havendo apenas um ruído assinalável quando observado sobre zoom ao longo das arestas dos polígonos.
+    \item \textbf{a = 50\%}: Em lógica similar ao ponto anterior, ao longo das arestas onde ocorre a transição de cores nota-se um aumento da presença de ruído. Contudo, nos centros dos polígonos a cor mantém-se uniforme, notando-se esse ruído apenas nos seus limites de transição de cor.
+    \item \textbf{a = 25\%}: Artefactos bastante presentes ao longo das arestas dos polígonos, mantendo a sua consistência e pureza de cor no centro dos mesmos.
+\end{itemize}
+
+\textbf{nature.bmp}
+\begin{itemize}
+    \item \textbf{a = 75\%}: Dada a natureza da imagem (a sua composição) o olho humano é menos suscetível a alterações na qualidade, uma vez que os elementos têm cores semelhantes e com transições mais suaves.
+    \item \textbf{a = 50\%}: Com a maior compressão da imagem alguns artefactos ligeiros começam a surgir em torno de detalhes como a relva e margens da lagoa.
+    \item \textbf{a = 25\%}: Nesta compressão já é bastante percetível a incapacidade de reproduzir contornos detalhados em certos elementos, como reflexos. Pela sua natureza (imagem de paisagem), todas as exportações são similares, mesmo sob um ligeiro zoom. Por não ter detalhes sensíveis ao visualizador (por exemplo a grafia que requer maior precisão nos contornos dos pixels, como em airport.bmp) poderá haver um relaxamento nos critérios sobre se esta taxa de compressão será ou não adequada às diversas utilizações.
+\end{itemize}
+
+% \newpage
+% 2.2
+%-------------------------------------------------------------------
+\subsection{O que se pode concluir}
+
+Conforme foi possível analisar neste capítulo a compressão de imagens de forma destrutiva é uma técnica que permite poupar uma quantidade significativa de dados e otimizar a transmissão e visualização de imagens de uma forma fidedigna consoante a utilização que se pretende.
+
+A compressão deste tipo de mídia tem também em conta o tipo de imagem que temos em mãos, pelo que é possível atingir altas taxas de compressão em imagens que do ponto de vista dos elementos que a compõem, são mais simples. Por exemplo, no caso da imagem geometric.bmp formada apenas por polígonos de cor única onde foi possível atingir taxas de compressão de aproximadamente 50 a 90 vezes. Isto é possível pois o algoritmo utilizado na compressão da imagem utiliza informações sobre os pixels adjacentes que a formam e, desta forma, como possui grandes áreas de cor igual ou semelhante, é possível atingir melhores taxas de compressão.
+
+Por outro lado, nas imagens airport.bmp e nature.bmp graças à maior quantidade de informação sobre os elementos, estes dificultam uma poupança de dados significativa. Quando existe essa poupança é por resultado de uma maior compressão da imagem com um valor da definição de exportação mais baixo, o que eventualmente se traduz numa limpeza acentuada de informação que culmina na pixelização dos seus contornos e detalhes. Variações bruscas de cor acabam invariavelmente por resultar no aumento de ruído em torno dos pontos onde essa variação ocorre.
+
+Em suma, o valor para a compressão/exportação de imagens no GIMP (ou outro tipo de ferramentas que aplique a compressão JPEG) deverá ser ponderado e dependerá, entre outras restrições possíveis, do cenário de aplicação final.
+\newpage
+
+% 3
+%-------------------------------------------------------------------
+\section{Comparação de Y com RGB e com CbCr}
+
+O modelo de cor YCbCr, conforme lecionado, é amplamente utilizado devido à sua capacidade de separar a informação de luminância da informação de crominância. Este modelo oferece diversas vantagens em termos de armazenamento e também de transmissão de dados, nomeadamente:
+
+\begin{enumerate}
+    \item Eliminação da redundância de informação: No modelo RGB, cada pixel é representado por três componentes: vermelho (R), verde (G) e azul (B). No entanto, a luminância está distribuída entre essas três componentes de forma redundante. O que o modelo YCbCr permite é que a componente Y contenha a informação completa da luminância para toda a imagem, reduzindo assim a repetição de informação e levando a uma representação eficiente da informação de brilho em apenas uma camada do modelo.
+    \item Melhor compressão de dados: Como a informação de luminância (Y) é mantida separada das informações de crominância (Cb [crominance blue] e Cr [crominance red]), é possível aplicar técnicas de compressão mais eficientes. Por exemplo, algoritmos de compressão como JPEG podem aproveitar as características da visão humana, que é mais sensível à variações de luminância do que de crominância, para reduzir ainda mais o tamanho do ficheiro sem perda significativa de qualidade percetível.
+\end{enumerate}
+
+No que toca à análise prática dos resultados obtidos, a componente Y do modelo, tendo toda a informação da luminância, permite-nos assim observar os detalhes das figuras presentes na imagem original sendo que, caso das restantes componentes Cb e Cr, visto que apenas guardam informação adicional sobre a crominância que permite reconstruir a cor original, não são evidentes os contornos e figuras presentes. \\
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Y_enc.png}
+    \label{fig:Y_enc}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Cb_enc.png}
+    \label{fig:Cb_enc}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.32\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Cr_enc.png}
+    \label{fig:Cr_enc}
+  \end{minipage}
+\caption{componentes YCbCr}
+\end{figure}
+
+\newpage
+% 4
+%-------------------------------------------------------------------
+\section{Análise do Downsampling}
+Como vimos anteriormente, a luminância (Y) contém detalhes sobre a intensidade (brilho) da imagem, enquanto as componentes de crominância (Cb e Cr) contêm informações sobre a cor. Esta separação é fundamental, pois percepcionalmente somos menos sensíveis às variações de crominância do que de luminância. Portanto, podemos aplicar a técnica de compressão perceptual, priorizando a precisão na representação da luminância, que é mais relevante para a percepção visual, enquanto podemos representar os canais de crominância com menos bits, sem que isso resulte num impacto significativo na qualidade visual percebida.
+
+Assim, o downsampling está acente num fator de subamostragem que é fornecido: o canal Y mantém-se inalterado, e por isso possui sempre fator 4 (por definição), o canal Cb pode tomar os valores 4, 2 ou 1, e o canal Cr pode tomar os valores 4, 2, 1 ou 0. 
+
+Este fator é usado de forma prática na remoção de colunas (e linhas quando o fator Cr é 0) dos pixels dos canais Cb e Cr, de forma alternada. Por exemplo, numa subamostragem 4:2:2, a cada quatro pixels de luminância (Y), existem dois pixels de crominância (Cb e Cr). Em mais detalhe, isto significa que os canais Cb e Cr são cortados para a metade da sua densidade de pixels quando o fator é 2, e respetivamente para um quarto quando o fator é 1. No entanto, no caso em que o fator do canal Cr seja 0, os pixels serão eliminados tanto em linha como em coluna, respeitando a proporção passada no fator Cb. Estes fatores descrevem assim a proporção entre os pixels de Y e as componentes Cb e Cr.
+
+É importante ter em conta que a etapa de downsampling é o primeiro de dois passos (juntamente com a quantização) de compressão destrutiva do algoritmo JPEG e como tal, após o downsampling, torna-se impossível fazer o seu upsampling para retornar às camadas Cb e Cr originalmente comprimidas.
+
+Após esta contextualização inicial passamos agora à análise do processo no âmbito do projeto.
+
+Como descrito acima, passando como argumentos 4:2:2 e 4:2:0 a largura das imagens diminuiu para metade. O mesmo acontece em relação à altura da última. Desta maneira metade da informação é perdida, no primeiro caso, e um quarto no segundo. Esta característica é salientada no cálculo das taxas de compressão dos canais Cb e Cr abaixo apresentadas (ambos de tamanhos iguais).
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Tamanho resultante & Fator de comp. & Tx. de comp. \\
+        \hline
+        3424310 & 4:4:4 & 1:1 \\
+        \hline
+        1712182 & 4:2:2 & $\approx2:1$ \\
+        \hline
+        856118  & 4:2:0 & $\approx4:1$ \\
+        \hline
+    \end{tabular}
+    \caption{Valores de compressão}
+    \label{tab:tabela2}
+\end{table}
+
+\hspace{28mm}\textbf{*Tamanhos em bytes}
+\vspace{20mm}
+
+Conforme podemos ver na \hyperref[fig:figure1]{figura 2} - que representa a camada Cb da imagem airport.bmp e que anteriormente tinha um aspect ratio de 16:9 - a sua largura foi cortada para metade, pois foi utilizado um fator 4:2:2, reduzindo alternadamente o número de colunas tanto na camada Cb como na camada Cr. Esta informação da crominância é, contudo, suficiente para a representação da imagem, sem que haja uma diferença significativa à perceção do olho humano. 
+
+Com isto estamos a manipular a quantidade de dados armazenados, e sendo este processo destrutivo (as colunas removidas não são armazenadas), não é possível garantir que a operação inversa recupere os dados originais. Isto deve-se ao facto de que a sua reconstrução é feita a partir de um método de interpolação que visa estimar os valores originais.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\linewidth]{images/Cb_dwn_smp_4_2_2_enc.png}
+    \caption{Downsampling 4:2:0 da imagem airport.bmp}
+    \label{fig:figure1}
+\end{figure}
+
+\subsection{Análise Quantitativa de Diferentes Tipos de Interpolação}
+O método de interpolação utilizado no downsampling é bastante relevante para se obter uma reconstrução mais próxima da original. Apresentamos a baixo a medição do erro associado utilizando uma interpolação linear e uma cúbica, de forma a salientar as diferenças inerentes a esta escolha.
+
+\begin{table}
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \multicolumn{3}{|c|}{Downsampling 4:2:0} \\
+        \hline
+        Interpolação & Linear & Cúbica\\
+        \hline
+        MSE & 129.965 & 120.120 \\
+        \hline
+        RMSE & 11.400 & 10.960 \\
+        \hline
+        SNR & 28.513 &  28.855 \\
+        \hline
+        PSNR & 26.993 & 27.335 \\
+        \hline
+    \end{tabular}
+    \caption{Métricas das interpolações do downsampling}
+    %\label{tab:tabela4}
+\end{table}
+
+\newpage
+
+% 5
+%-------------------------------------------------------------------
+\section{Transformada de Cosseno Discreta (DCT)}
+A Transformada de Cosseno Discreta (DCT) é uma técnica fundamental em processamento de sinais e compressão de dados. Focando-se na análise das frequências presentes num 
+sinal, a DCT é amplamente utilizada em aplicações de compressão de imagem e áudio devido à sua capacidade de representar eficientemente informações de baixa frequência, concentrando-as 
+em poucos coeficientes estando os restantes alocados para as altas frequências. Esta transformada permite explorar redundâncias presentes em sinais, especialmente em imagens, onde a informação visual 
+tende a ser altamente correlacionada ou seja imagens fotorealísticas ou bitmaps com grande detalhe e transições suaves perdominantemente. Ao dividir a imagem em blocos e transformá-los no domínio das 
+frequências, a DCT facilita a compactação de dados sem perda perceptível de qualidade, tornando-a uma ferramenta valiosa em diversas aplicações de processamento de imagem e vídeo. Na análise a seguir, vamos explorar os resultados obtidos ao aplicar a DCT em diferentes configurações de blocos e sua influência no potencial de compressão de imagens.
+
+\subsection{DCT de um Canal Completo}
+
+Na secção/questão 7.1 na aplicação DCT nos canais completos da imagem, notamos que as transições espaciais são suaves, o que resulta numa representação uniforme das variações de cor e intensidade em toda a imagem. No entanto, essa abordagem global não tem em consideração as características locais da imagem. Por outras palavras, a transformada não consegue capturar eficientemente a redundância presente em regiões específicas.
+
+Devido a essa limitação, pode ser necessário mais informação para representar a imagem de forma eficaz. Isso pode ter um impacto negativo no potencial de compressão, uma vez que a redundância não está ser explorada adequadamente. Um exemplo disto pode ser observado durante a etapa de quantização, ao usar a DCT nos canais completos da imagem, é mais provável que ocorram distorções perceptíveis, mesmo com um fator de qualidade razoável, em comparação com a abordagem da DCT em blocos menores.
+
+Esta análise realça a importância de considerar as características locais da imagem ao aplicar a DCT, o que pode resultar numa representação mais eficiente e numa melhor qualidade de imagem após a compressão.
+
+\begin{figure}[H]  %[ht]
+  \centering
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Y_dct_full_enc.png}
+    \caption{DCT full channel Y airport.bmp}
+    \label{fig:y_dct_full}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Y_enc.png}
+    \caption{Canal Y da imagem airport.bmp}
+    \label{fig:y}
+  \end{minipage}
+\end{figure}
+
+\subsection{DCT em Blocos 8x8}
+
+Na secção/questão 7.2, ao aplicarmos a Transformada Cosseno Discreta (DCT) em blocos pequenos de 8x8 pixels de uma imagem, conseguimos destacar detalhes finos e mudanças rápidas na tonalidade de forma mais precisa, sendo que após a aplicação da DCT este caso é o unico onde é possível perceber o contexto da imagem original como podemos ver na \hyperref[fig:y_dct_8]{figura 5}. Isto deve se à capacidade da DCT de separar a imagem em partes menores, permitindo uma análise mais detalhada de cada bloco individualmente.
+Cada bloco resultante da DCT possui a sua própria gama de tonalidades, com áreas escuras representadas por baixas frequências e áreas claras por altas frequências, enquanto existem também blocos com uma mistura de frequências intermediárias.
+Essa divisão da imagem em blocos de 8x8 pixels antes da aplicação da DCT proporciona nos um controlo mais refinado sobre como as diferentes frequências são tratadas durante o processamento da imagem. Consequentemente, somos capazes de suavizar ou eliminar detalhes desnecessários de forma mais eficaz durante a compressão da imagem, resultando numa melhor capacidade de compressão e qualidade de imagem em comparação com as outras abordagens.
+
+\begin{figure} [H]  %[ht]
+  \centering
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Y_dct_8x8_enc.png}
+    \caption{DCT full channel Y airport.bmp}
+    \label{fig:y_dct_8}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Y_enc.png}
+    \caption{Canal Y da imagem airport.bmp}
+    \label{fig:y_2}
+  \end{minipage}
+\end{figure}
+
+\subsection{DCT em Blocos 64x64}
+
+Na secção/questão 7.3, ao explorar a aplicação da DCT em blocos de 64 por 64, observamos que, embora os detalhes locais da imagem sejam imperceptíveis em relação ao conteúdo geral, estes apresentam uma forte correlação com as transições presentes na zona do bloco e as tonalidades que representam as frequências espaciais. Por exemplo, áreas da imagem com transições suaves, como o céu e a pista do lado direito, resultam em blocos mais escuros, enquanto áreas com alta frequência espacial, como os túneis conectados aos aviões, resultam em tonalidades mais claras. Comparando com a DCT de 8 por 8, notamos que o contexto da imagem é menos perceptível na DCT de 64 por 64, embora em ambas seja possível observar a correlação entre as zonas de frequências espaciais e as transições abruptas na imagem. Em termos de potencial de compressão, a DCT em blocos de 64 por 64 vai ser evidentemente mais eficiente do que a DCT de Canal Completo. No entanto a DCT 8 por 8 irá ser mais adequado devido ao melhor fit da resolução espacial.
+
+\begin{figure} [H]  %[ht]
+  \centering
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Y_dct_64x64_enc.png}
+    \caption{DCT full channel Y airport.bmp}
+    \label{fig:imagem1}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{images/Y_enc.png}
+    \caption{Canal Y da imagem airport.bmp}
+    \label{fig:imagem2}
+  \end{minipage}
+\end{figure}
+
+\subsection{Conclusão}
+
+Em resumo, ao aplicarmos a Transformada Cosseno Discreta (DCT) em diferentes contextos, desde canais completos até blocos menores como 8x8 e 64x64 pixels, observamos que a abordagem em blocos menores oferece uma melhor capacidade de compressão e preservação da qualidade da imagem. Isso ocorre devido à capacidade da DCT em destacar detalhes finos e mudanças rápidas na tonalidade de forma mais precisa, permitindo uma compressão mais eficiente e preservando melhor a fidelidade da imagem.
+
+\newpage
+% 6
+%-------------------------------------------------------------------
+\section{Quantização}
+
+Este processo é o segundo passo destrutivo do algoritmo, sendo este responsável pela maior perda de informação face à original e, consequentemente, o que realiza maior compressão.
+A quantização passa pela divisão (em blocos) dos elementos resultantes da DCT pelos elementos de matrizes obtidas por estudos psicológicos - as matrizes de quantização. Estas matrizes são caracterizadas por valores mais altos para elementos cuja frequência espacial é maior. Isto acontece pois o ser humano não tem tanta sensibilidade para distinguir variações de elementos de alta frequência espacial e, desta forma, é possível codificar estes valores com um menor número de bits sem que a imagem sofra alterações percetíveis, executando assim uma compressão perceptual.
+
+As matrizes de quantização standard ($Q_s$) são múltiplicadas por um quociente ($S_f$) derivado de um fator de qualidade passado por parâmetro segundo as formulas abaixo, sendo $Q_1$ uma matriz 8 por 8 constituida apenas de 1s.
+
+\begin{align*}
+S_f &= 
+\begin{cases}
+    \frac{100 - q_f}{\substack{50}} & \text{se } q_f \geq 50 \\
+    \frac{50}{\substack{q_f}} & \text{se } q_f < 50
+\end{cases} &
+Q_s &= 
+\begin{cases}
+    \text{round}(Q \cdot S_f) & \text{se } S_f \neq 0 \\
+    Q_1 & \text{se } S_f = 0
+\end{cases}
+\end{align*}
+
+Como podemos observar, quanto menor for o fator de qualidade, maiores serão os valores das matrizes de quantização. O que por sua vez se traduz em valores menores para os canais que sofrem quantização. A perda de informação face à imagem original está associada com os dois arredondamentos associados ao cálculo do coeficiente $S_f$ e às divisões em blocos executadas.
+
+
+% (Apesar da perda de informação estar fortemente relacionada com o uso de menos bits para a representação dos elementos das imagens, os arredondamentos associados às divisões intermédias acarretam também perdas de informação.)
+
+\subsection{Comparação dos Fatores de Qualidade}
+
+Tendo em conta que, para um fator de qualidade mais elevado, menores são os valores das matrizes de quantização resultantes para cada canal, as imagens que mais se aproximam do fator de 100 não sofrem um decréscimo tão acentuado dos seus valores. Isto traduz-se em imagens mais claras e detalhadas, aproximando-se das tonalidade de cor da \hyperref[fig:y_dct_8]{fig. 5} obtida no capítulo anterior. Este fenómeno é evidenciado pela \hyperref[fig:quant_figs]{fig. \ref{fig:quant_figs}}.
+
+\begin{itemize}
+    \item \textbf{q$_f$ = 100\%}:
+        Podemos observar poucas diferenças em relação à DCT, pois a matriz de quantização é uma matriz de apenas 1s, sendo os escurecimentos provenientes do arredondamento dos seus valores.
+    \item \textbf{q$_f$ = 75\%}:
+        Vários detalhes passam a ser representados por pixels mais escuros devido às matrizes de quantização agora com valores diferentes de 1, e cujos valores mais elevados incidem nos elementos de maior frequência espacial.
+        Ainda é possível distinguir silhuentas dos objetos presentes na imagem original como os aviões e as letras do chão. 
+    \item \textbf{q$_f$ = 50\%}:
+        Apresenta um resultado bastante parecido com a imagem anterior, tendo mais elementos representados a preto devido a uma matriz de quantização com valores mais elevados que os anteriores.
+    \item \textbf{q$_f$ = 25\%}:
+        O aumento de pixels a preto ainda se observa. Ainda assim é possivel distinguir as silhuentas mais relevantes nomeadamente dos aviões e das letras.
+    \item \textbf{q$_f$ = 10\%}: 
+        Neste caso as letras do chão já são mais dificilmente distinguíveis assim como os aviões mais distantes, onde estão presentes apenas resquícios das figuras originais.
+\end{itemize}
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}{.3\textwidth}
+  \label{fig:qnt_Cr_100}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/Cr_qnt_qf_100_enc}
+\end{minipage}%
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/Cr_qnt_qf_75_enc}
+  \label{fig:qnt_Cr_75}
+\end{minipage}%
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/Cr_qnt_qf_50_enc}
+  \label{fig:qnt_Cr_50}
+\end{minipage}
+
+\medskip % adds some vertical space
+
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/Cr_qnt_qf_25_enc}
+  \label{fig:qnt_Cr_25}
+\end{minipage}%
+\begin{minipage}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{images/Cr_qnt_qf_10_enc}
+  \label{fig:qnt_Cr_10}
+\end{minipage}
+
+\caption{Quantização do canal Cr para os fatores de qualidade 100, 75, 50, 25 e 10}
+\label{fig:quant_figs}
+\end{figure}
+
+\subsection{Comparação dos Resultados Obtidos com os da Aínea 7}
+
+Comparativamente com os resultados da DCT obtidos no capítulo anterior, as imagens com quantização apresentam valores mais escuros pois estão codificados com valores menores. Também é possível verificar componentes mais claras no canto superior esquerdo de cada bloco. Isto acontece porque é nestes cantos onde estão os valores com menor frequência espacial.
+
+\newpage
+
+% 7
+%-------------------------------------------------------------------
+\section{Codificação DPCM dos Coeficientes DC}
+Nesta etapa, a diferença entre o coeficiente DC atual e o coeficiente DC do bloco anterior é calculada e codificada, o que enfatiza as mudanças nos níveis de luminosidade entre blocos de pixels consecutivos.
+
+\subsection{Análise dos Resultados}
+Para a análise dos resultados foram usados um fator de qualidade de 75\%, downsampling com fatores 4:2:2 e blocos de tamanho 8.
+
+Após a codificação DPCM dos coeficientes DC, é observável a distinção vincada nas tonalidades, especialmente em transições suaves nas imagens, onde existe uma zona mais escura em comparação com as imagens após a quantização.
+
+Em termos de compressão, a codificação DPCM diminui a redundância, visto que apenas se guarda a diferença dos elementos. Devido à forte correlação destes valores (sendo esta mais presente para imagens fotorrealistas), é possível representar esta diferença com um número de bits menor face aos valores originais.
+
+A codificação DPCM permite uma redução na entropia dos dados ao explorar a correlação entre os valores adjacentes e codificar apenas as diferenças conforme já vimos. Estes resultados são apresentados na tabela abaixo:
+
+\begin{center}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Entropia} & \textbf{Valor} \\
+        % \hline
+        % Entropia & 2.855 \\
+        \hline
+        Entropia Y\_Q & 1.644 \\
+        \hline
+        Entropia Cb\_Q & 0.419 \\
+        \hline
+        Entropia Cr\_Q & 0.393 \\
+        \hline
+        Entropia Y\_dpcm & 1.521 \\
+        \hline
+        Entropia Cb\_dpcm & 0.310 \\
+        \hline
+        Entropia Cr\_dpcm & 0.282 \\
+        \hline
+    \end{tabular}
+    \caption{Tabela da entropia}
+    \label{tab:tabela3}
+\end{table}
+\end{center}
+
+Este processo em conjunto com o cálculo dos coeficientes AC resultaria num grande número de valores concentrados em 0 e ao seu redor havendo uma grande probabilidade de existir elementos repetidos de forma sequencial, sendo este o cenário ideal para uma codificação como o RLE.
+
+\newpage
+
+% 8
+%-------------------------------------------------------------------
+\section{Métricas de Distorção}
+
+A análise das métricas dos erros de distorção são fundamentais para a avaliação da qualidade de compressão das imagens. Como já vimos anteriormente, o JPEG tem uma boa capacidade de reduzir o tamanho dos ficheiros sem uma perda significativa de qualidade visual perceptual (dependendo do tipo de imagem e do fator de qualidade). No entanto, como em qualquer processo de compressão e em particular a compressão destrutiva, podem ocorrer distorções que afetam a fidelidade da imagem original.
+
+É neste contexto que surgem algumas métricas de erros de distorção como:
+
+\begin{itemize}
+    \item O MSE (Mean Squared Error) quantifica a média dos quadrados das diferenças entre os valores dos pixels originais e os valores dos pixels comprimidos. Essencialmente mede o quanto os valores dos pixels foram distorcidos durante a compressão e assim, quanto menor o MSE, menor é a distorção percebida na imagem. Esta métrica penaliza fortemente os erros e é ideal para detetar variações mínimas.
+\end{itemize}
+
+\begin{equation}
+\text{MSE} = \frac{1}{M \cdot N} \sum_{i=0}^{M-0} \sum_{j=1}^{N-1} (I_O(i, j) - I_R(i, j))^2
+\end{equation}
+
+\begin{itemize}
+    \item O RMSE (Root Mean Squared Error) é simplesmente a raiz quadrada do MSE supracitado. Esta métrica fornece uma medida da média das diferenças entre os valores dos pixels originais e os valores dos pixels comprimidos, mas numa escala que está na mesma unidade de medida que os próprios pixels. Assim como o MSE, quanto menor o RMSE, menor é a distorção percebida na imagem.
+\end{itemize}
+
+\begin{equation}
+\text{RMSE} = \sqrt{\text{MSE}}
+\end{equation}
+
+\begin{itemize}
+    \item A SNR (Signal-to-Noise Ratio) compara o nível do sinal (ou seja, os dados úteis da imagem) com o nível de ruído (neste caso as distorções introduzidas durante a compressão). Uma SNR mais alta indica uma melhor qualidade de imagem, pois o sinal é mais proeminente em relação ao ruído.
+\end{itemize}
+
+\begin{equation}
+\text{SNR} = 10 \cdot \log_{10} \left( \frac{P}{MSE} \right)
+\end{equation}
+
+\begin{itemize}
+    \item O PSNR (Peak Signal-to-Noise Ratio) é uma variação da SNR que leva em consideração o intervalo de valores possíveis para os pixels. Calcula a relação entre a potência máxima do sinal possível e a potência do ruído introduzido durante a compressão. Assim como a SNR, um PSNR mais alto é também indicativo de uma melhor qualidade de imagem.
+\end{itemize}
+
+\begin{equation}
+\text{PSNR} = 10 \cdot \log_{10} \left( \frac{{\text{max}\left(I_o\right)}^2}{\text{MSE}} \right)
+\end{equation}
+
+Por outro lado temos outras métricas que, não dizendo respeito ao erro de uma forma direta, ajudam-nos a compreender as diferenças dos valores absolutos dos pixels entre as camadas Y da imagem original (I\_O) e da imagem reconstruída (I\_R), nomeadamente:
+
+\begin{itemize}
+    \item A Diferença Máxima (Max Diff) destaca os maiores impactos de distorção presente na imagem após a compressão, identificando o pixel que foi mais significativamente alterado durante o processo de compressão. Uma diferença máxima menor indica uma compressão mais eficaz, porque significa que as distorções mais extremas foram minimizadas.
+\end{itemize}
+
+\begin{equation}
+\text{max\_diff} = \max |I_O(i, j) - I_R(i, j)|
+\end{equation}
+
+\begin{itemize}
+    \item A Diferença Média (Avg Diff) fornece uma visão mais geral do nível médio de distorção presente na imagem após a compressão e indica uma compressão mais eficiente, pois significa que, em média, as distorções na imagem são menores.
+\end{itemize}
+
+\begin{equation}
+\text{avg\_diff} = \frac{1}{N} \sum_{i=1}^{N} |I_O(i, j) - I_R(i, j)|
+\end{equation}
+
+\subsection{O que se pode concluir}
+Após a extração dos valores para a imagem padrão (airport.bmp), podemos verificar nas tabelas seguites os valores das métricas de distorção para a  \hyperref[tab:tabela4]{subamostragem 4:2:2}, a \hyperref[tab:tabela5]{subamostragem 4:2:0} e para \hyperref[tab:tabela6]{diferença máxima e média} (apenas na camada Y - que neste caso não depende do downsampling pois a camada Y não sofre uma redução do seu tamanho original conforme visto anteriormente). 
+
+Daqui podemos extrair como conclusões resultantes que o downsampling 4:2:0, pelo facto de remover tanto colunas como linhas tem uma capacidade destrutiva maior e, no momento da reconstrução da imagem, dista significativamente no valor do MSE (entre os tipos de downsampling analisados abaixo). Também, numa avaliação horizontal, conforme o fator de qualidade vai diminuindo também o valor do MSE vai aumentando de uma forma exponencial, motivo pelo qual fatores de qualidade abaixo de 10 podem não ter uma utilidade prática pela sua quantidade de distorção. Em paralelo, o RMSE dá-nos uma ideia de quanto os valores dos pixels na imagem comprimida estão, em média, desviados dos valores originais sendo que à medida que o fator de qualidade aumenta, estes valores (MSE e RMSE) diminuem. Na prática, uma compressão ideal tem, nestas duas métricas, valores próximos a zero.
+
+Por outro lado o SNR e o PSNR têm um crescimento à medida que o fator de qualidade aumenta. Isto acontece porque, ao aumentar o fator de qualidade, mais informação está a ser preservada na imagem, o que significa que há menos compressão e, consequentemente, menos perda de detalhes levando a um sinal mais forte.
+
+Por fim, o Max diff. e o Avg. diff. (diferença máxima e diferença média - \hyperref[tab:tabela6]{[ver tabela]}) apenas nos mostram - para a camada Y - as diferenças e a média de diferenças entre os pixels da imagem original e da imagem reconstruída, assinalando de forma clara a transição de cor que ocorre associado ao fator de qualidade. Isto significa que à medida que o fator de qualidade diminui, as diferenças de valor entre os pixels da imagem original e da imagem preservada aumentam drasticamente.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \multicolumn{6}{|c|}{Downsampling 4:2:2} \\
+        \hline
+        Métrica/qf & 10 & 25 & 50 & 75 & 100 \\
+        \hline
+        MSE & 565.573 & 287.962 & 164.397 & 87.295 & 11.238 \\
+        \hline
+        RMSE & 23.782 & 16.969 & 12.822 & 9.343 & 3.352 \\
+        \hline
+        SNR & 22.126 & 25.058 & 27.491 & 30.241 & 39.144 \\
+        \hline
+        PSNR & 20.606 & 23.537 & 25.972 & 28.721 & 37.624 \\
+        \hline
+    \end{tabular}
+    \caption{Métricas de distorção 1}
+    \label{tab:tabela4}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \multicolumn{6}{|c|}{Downsampling 4:2:0} \\
+        \hline
+        Métrica/qf & 10 & 25 & 50 & 75 & 100 \\
+        \hline
+        MSE & 634.438 & 340.703 & 209.166 & 129.965 & 52.621 \\
+        \hline
+        RMSE & 25.188 & 18.458 & 14.463 & 11.400 & 7.254 \\
+        \hline
+        SNR & 21.627 & 24.327 & 26.446 & 28.513 & 32.439 \\
+        \hline
+        PSNR & 20.107 & 22.807 & 24.926 & 26.993 & 30.919 \\
+        \hline
+    \end{tabular}
+    \caption{Métricas de distorção 2}
+    \label{tab:tabela5}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \multicolumn{6}{|c|}{Independente do downsampling} \\
+        \hline
+        Métrica/qf & 10 & 25 & 50 & 75 & 100 \\
+        \hline
+        Max. Diff. & 187.271 & 97.949 & 75.997 & 42.591 & 1.446 \\
+        \hline
+        Avg. Diff. & 7.359 & 5.007 & 3.672 & 2.620 & 0.205 \\
+        \hline
+    \end{tabular}
+    \caption{Métricas de distorção 3}
+    \label{tab:tabela6}
+\end{table}
+
+Na \hyperref[fig:Diffs]{fig. \ref{fig:Diffs}} é possível observar uma representação visual dos erros de construção através das diferenças entre a original e a reconstruída.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{images/Diffs.png}
+  \caption{Imagem das diferenças $q_f=$75 dct blocks=8}
+  \label{fig:Diffs}
+\end{figure}
+
+Em suma, este conjunto de todas as métricas permitem fazer uma avaliação mais detalhada do erro de compressão, evidenciando de forma clara o custo associado aos diferentes níveis de fator de qualidade.
+
+% 9
+%-------------------------------------------------------------------
+\section{Conclusão}
+
+Neste trabalho foram implementados os passos mais relevantes de uma compressão JPEG, o que nos permitiu obter um conhecimento mais abrangente do codec em questão. Efetuámos uma análise prática da compressão de imagens usando a ferramenta GIMP, examinando os efeitos da variação da qualidade de compressão nas imagens resultantes, consoante fatores de qualidade diferentes. 
+
+Na implementacão do algoritmo conseguimos obter um melhor entendimento do modelo YCbCr e como este consegue eliminar redundância do fator de luminância presente em todos os canais RGB, descorrelacionando-a da crominância da imagem.
+
+Além disso, discutimos a importância do downsampling na compressão JPEG para reduzir ainda mais o tamanho do ficheiro final, explorando o descorrelacionamento provocado pelo modelo YCbCr e o facto do Ser Humano ser mais sensível à luminância, analisando ainda os efeitos desse processo na qualidade visual da imagem, sendo a partir desta etapa que as diferenças relativamente à imagem original se fazem notar. Tal acontece porque este é um passo destrutivo, sem garantias de recuperação dos valores originais.
+
+Após o downsampling foi feito o cálculo da DCT para os diferentes canais e a respetiva discussão dos resultados obtidos para janelas de dimensões diferentes, nomeadamente: utilizámos a DCT para o canal inteiro e para janelas quadradas de comprimento de 8 e 64 pixels. Para este processo foi fulcral o uso de padding fazendo com que as dimensões das imagens fossem múltiplas de 32.
+
+Com a quantização ficou claro que os elementos de altas frequências espaciais não são tão notórios e que, por isso, o rigor da sua representação não tão é exigente, podendo ser usado um menor número de bits. O cálculo dos coeficientes DC visa também uma representação que utilize menos bits tendo em conta o cálculo de diferenças.
+
+Em suma, este trabalho permitiu-nos aprofundar o nosso entendimento sobre os conceitos fundamentais de compressão de imagem e as técnicas utilizadas na prática. Concluímos que a compressão de imagem é uma ferramenta essencial na era digital para garantir a eficiência na transmissão e armazenamento de dados de imagem, e que o conhecimento desses conceitos é crucial para a implementação de sistemas de compressão de imagem eficazes e de alta qualidade.
+
+\end{document}
